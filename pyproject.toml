@@ -44,7 +44,8 @@ source-include = [
     "tests/*.*",
     "*.in",
     "*.md",
-    "uv.lock"
+    "uv.lock",
+    ".flake8",
 ]
 
 [tool.mypy]
