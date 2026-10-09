@@ -1,11 +1,64 @@
+[project]
+authors = [
+    { name = "Matrix.org Team and Contributors", email = "packages@matrix.org" }
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+]
+dependencies = [
+    "black>=26.10.0",
+    "check-manifest>=0.51",
+    "coverage>=7.16.2",
+    "flake8>=7.4.1",
+    "isort>=9.0.2",
+    "mypy>=2.4.0",
+    "pytest>=9.1.1",
+]
+description = "Sort and encode objects and arrays as UTF-8 RFC 7519 JSON."
+keywords = [
+    "json",
+]
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+name = "canonicaljson"
+readme = "README.rst"
+requires-python = ">=3.10"
+version = "2.0.0"
+
+[project.urls]
+github = "https://github.com/matrix-org/python-canonicaljson"
+
+
+[build-system]
+build-backend = "uv_build"
+requires = ["uv_build>=0.12.21,<0.13.0"]
+
+[tool.uv.build-backend]
+source-exclude = [
+    ".github",
+]
+source-include = [
+    "src/*.*",
+    "tests/*.*",
+    "*.in",
+    "*.md",
+    "uv.lock",
+    ".flake8",
+]
+
 [tool.mypy]
+files = ["."]
 show_error_codes = true
 strict = true
 
-files = ["."]
+[tool.flake8]
+# see https://pycodestyle.readthedocs.io/en/latest/intro.html#error-codes
+# for error codes. The ones we ignore are:
+#  E501: Line too long (black enforces this for us)
+ignore = ["E501"]
 
-[build-system]
-requires = [
-    "setuptools >= 35.0.2",
-]
-build-backend = "setuptools.build_meta"
+[tool.isort]
+profile = "black"
+src_paths = ["src","tests"]

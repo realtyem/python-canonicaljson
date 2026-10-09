@@ -45,7 +45,7 @@ class TestCanonicalJson(unittest.TestCase):
         # non-ascii should come out utf8-encoded.
         self.assertEqual(
             encode_canonical_json({"la merde amusée": "💩"}),
-            b'{"la merde amus\xc3\xa9e":"\xF0\x9F\x92\xA9"}',
+            b'{"la merde amus\xc3\xa9e":"\xf0\x9f\x92\xa9"}',
         )
 
         # so should U+2028 and U+2029
@@ -101,7 +101,7 @@ class TestCanonicalJson(unittest.TestCase):
         # non-ascii should come out utf8-encoded.
         self.assertEqual(
             encode_pretty_printed_json({"la merde amusée": "💩"}),
-            b'{\n    "la merde amus\xc3\xa9e": "\xF0\x9F\x92\xA9"\n}',
+            b'{\n    "la merde amus\xc3\xa9e": "\xf0\x9f\x92\xa9"\n}',
         )
 
     def test_unknown_type(self) -> None:
