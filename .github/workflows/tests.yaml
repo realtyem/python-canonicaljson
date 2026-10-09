@@ -23,14 +23,22 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
         with:
-          python-version: ${{ matrix.python-version}}
-      - run: |
-          uv run flake8 src tests
-          uv run isort --check src tests
-          uv run python -m black --check --diff src tests
-          uv run mypy src tests
+          enable-cache: true
+      - name: Set up Python
+        run: uv python install ${{ matrix.python-version}}
+
+      # 4. Synchronize dependencies using your lockfile
+      - name: Install dependencies
+        run: uv sync --locked
+      - name: Lint
+        run: |
+          uv run --python ${{ matrix.python-version}} flake8 src tests
+          uv run --python ${{ matrix.python-version}} isort --check src tests
+          uv run --python ${{ matrix.python-version}} python -m black --check --diff src tests
+          uv run --python ${{ matrix.python-version}} mypy src tests
 
   unittest:
     runs-on: ubuntu-24.04
@@ -42,10 +50,18 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
         with:
-          python-version: ${{ matrix.python-version }}
-      - run: |
+          enable-cache: true
+      - name: Set up Python
+        run: uv python install ${{ matrix.python-version}}
+
+      # 4. Synchronize dependencies using your lockfile
+      - name: Install dependencies
+        run: uv sync --locked
+      - name: Run Tests
+        run: |
           uv run coverage run --source canonicaljson -m unittest
           uv run coverage report -m --fail-under 100
 
@@ -59,8 +75,18 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
-      - run: uv run check-manifest
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - name: Set up Python
+        run: uv python install ${{ matrix.python-version}}
+
+      # 4. Synchronize dependencies using your lockfile
+      - name: Install dependencies
+        run: uv sync --locked
+      - name: Check manifest
+        run: uv run check-manifest
 
   macos-tests:
     runs-on: macos-26
@@ -72,9 +98,17 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
         with:
-          python-version: ${{ matrix.python-version }}
-      - run: |
+          enable-cache: true
+      - name: Set up Python
+        run: uv python install ${{ matrix.python-version}}
+
+      # 4. Synchronize dependencies using your lockfile
+      - name: Install dependencies
+        run: uv sync --locked
+      - name: Run Tests on MacOS
+        run: |
           uv run coverage run --source canonicaljson -m unittest
           uv run coverage report -m --fail-under 100
