@@ -45,7 +45,7 @@ class TestCanonicalJson(unittest.TestCase):
         # non-ascii should come out utf8-encoded.
         self.assertEqual(
             encode_canonical_json({"la merde amusée": "💩"}),
-            b'{"la merde amus\xc3\xa9e":"\xF0\x9F\x92\xA9"}',
+            b'{"la merde amus\xc3\xa9e":"\xf0\x9f\x92\xa9"}',
         )
 
         # so should U+2028 and U+2029
@@ -101,7 +101,7 @@ class TestCanonicalJson(unittest.TestCase):
         # non-ascii should come out utf8-encoded.
         self.assertEqual(
             encode_pretty_printed_json({"la merde amusée": "💩"}),
-            b'{\n    "la merde amus\xc3\xa9e": "\xF0\x9F\x92\xA9"\n}',
+            b'{\n    "la merde amus\xc3\xa9e": "\xf0\x9f\x92\xa9"\n}',
         )
 
     def test_unknown_type(self) -> None:
@@ -135,6 +135,51 @@ class TestCanonicalJson(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             encode_pretty_printed_json(nan)
+
+    def test_invalid_nested_float_values(self) -> None:
+        """Infinity/-Infinity/NaN are not allowed in canonicaljson."""
+        data_with_inf = {"a": 1, "b": float("inf")}
+        data_with_neg_inf = {"a": 1, "b": -float("inf")}
+        data_with_nan = {"a": 1, "b": float("nan")}
+        list_with_inf = {"a": [1, float("inf")]}
+        list_with_neg_inf = {"a": [1, -float("inf")]}
+        list_with_nan = {"a": [1, float("nan")]}
+
+        with self.assertRaises(ValueError):
+            encode_canonical_json(data_with_inf)
+
+        with self.assertRaises(ValueError):
+            encode_pretty_printed_json(data_with_inf)
+
+        with self.assertRaises(ValueError):
+            encode_canonical_json(data_with_neg_inf)
+
+        with self.assertRaises(ValueError):
+            encode_pretty_printed_json(data_with_neg_inf)
+
+        with self.assertRaises(ValueError):
+            encode_canonical_json(data_with_nan)
+
+        with self.assertRaises(ValueError):
+            encode_pretty_printed_json(data_with_nan)
+
+        with self.assertRaises(ValueError):
+            encode_canonical_json(list_with_inf)
+
+        with self.assertRaises(ValueError):
+            encode_pretty_printed_json(list_with_inf)
+
+        with self.assertRaises(ValueError):
+            encode_canonical_json(list_with_neg_inf)
+
+        with self.assertRaises(ValueError):
+            encode_pretty_printed_json(list_with_neg_inf)
+
+        with self.assertRaises(ValueError):
+            encode_canonical_json(list_with_nan)
+
+        with self.assertRaises(ValueError):
+            encode_pretty_printed_json(list_with_nan)
 
     def test_encode_unknown_class_raises(self) -> None:
         class C:
